@@ -15,7 +15,6 @@ public class Calc {
     @Autowired
     private Parser parser;
     private final String formula = "X1+X2/(X3*6.1)-5";
-//    private static final String formula = "X1+X2/X3";
 
     @RequestMapping("/calc") //(method=POST)
     public double greeting(@RequestBody List<Double> args) {
