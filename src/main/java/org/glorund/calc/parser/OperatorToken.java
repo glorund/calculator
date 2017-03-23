@@ -16,5 +16,10 @@ public class OperatorToken {
     public int getIndex() {
         return index;
     }
+    @Override
+    public String toString() {
+        return "Token [" + operator + ", idx=" + index + "]";
+    }
+    
     
 }
