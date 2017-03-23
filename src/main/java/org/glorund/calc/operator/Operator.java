@@ -5,4 +5,5 @@ public interface Operator {
     public abstract double evaluate(double leftOperand);
     public boolean isUnary();
     public abstract String getSymbol();
+    public abstract int getPriority();
 }

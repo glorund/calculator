@@ -2,17 +2,19 @@ package org.glorund.calc.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+
 import org.glorund.calc.Expression;
 import org.glorund.calc.ExpressionTree;
 import org.glorund.calc.ExpressionValue;
 import org.glorund.calc.operator.AdditionOperator;
+import org.glorund.calc.operator.AssignOperator;
 import org.glorund.calc.operator.DivineOperator;
 import org.glorund.calc.operator.MultiplyOperator;
 import org.glorund.calc.operator.Operator;
 import org.glorund.calc.operator.SubtractionOperator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Parser {
@@ -29,7 +31,7 @@ public class Parser {
         operators.add(new DivineOperator());
     }
 
-    public ExpressionToken parse(String formula,boolean inBrakets) {
+    public ExpressionToken parse(String formula,boolean inBrakets,int priority) {
         List<ExpressionValue> values = new ArrayList<>();
         int formulaLength = formula.length();
         int pos = 0;
@@ -42,9 +44,14 @@ public class Parser {
             }
             if (formula.charAt(pos)== '(') {
                 LOGGER.debug("braket foud at {}. Going deep",pos);
-                ExpressionToken internal = parse(formula.substring(pos+1),true);
+                ExpressionToken internal = parse(formula.substring(pos+1),true,priority);
                 pos+=internal.getIndex()+2;
-                leftOperator.setRightOperand(internal.getExpression().getTree());
+                if (leftOperator == null) {
+                    leftOperator = new ExpressionTree(new AssignOperator());
+                    leftOperator.setLeftOperand(internal.getExpression().getTree());
+                } else {
+                    leftOperator.setRightOperand(internal.getExpression().getTree());
+                }
                 values.addAll(internal.getExpression().getValues());
                 LOGGER.debug("get back. {}", leftOperator);
             } else {
@@ -62,18 +69,40 @@ public class Parser {
                         values.add(value);
                         LOGGER.debug("unclosed {} {}",operand, operator.getOperator().getSymbol()); 
                     } else {
-                        // looks great create node
-                        if (operand.length() > 0 ) {
-                            ValueToken token = parseValue(operand);
-                            leftOperator.setRightOperand(token.getValue());
-                            if (!token.isConstant()) {
-                                values.add(token.getValue());
-                            }
+                        if (priority>operator.getOperator().getPriority()) {
+                            pos--;
+                            LOGGER.debug("lowered. get up");
+                            break;
                         }
-                        ExpressionTree expr = new ExpressionTree(operator.getOperator());
-                        expr.setLeftOperand(leftOperator);
-                        leftOperator = expr;
-                        LOGGER.debug("operator {} ",expr);
+                        if (priority<operator.getOperator().getPriority()) {
+                            LOGGER.debug("increased. dig in");
+                            ExpressionToken internal = parse(formula.substring(pos),false, operator.getOperator().getPriority());
+
+                            ExpressionTree expr = new ExpressionTree(operator.getOperator());
+                            ValueToken leftToken = parseValue(operand);
+                            if (!leftToken.isConstant()) {
+                                values.add(leftToken.getValue());
+                            }
+                            expr.setLeftOperand(leftToken.getValue());
+                            expr.setRightOperand(internal.getExpression().getTree());
+                            leftOperator.setRightOperand(expr);
+                            values.addAll(internal.getExpression().getValues());
+                            LOGGER.debug("left {}", leftOperator);
+                            pos+=internal.getIndex();
+                            LOGGER.debug("form {}",formula.substring(pos));
+                        } else {
+                            if (operand.length() > 0 ) {
+                                ValueToken token = parseValue(operand);
+                                leftOperator.setRightOperand(token.getValue());
+                                if (!token.isConstant()) {
+                                    values.add(token.getValue());
+                                }
+                            }
+                            ExpressionTree expr = new ExpressionTree(operator.getOperator());
+                            expr.setLeftOperand(leftOperator);
+                            leftOperator = expr;
+                        }
+                        LOGGER.debug("operator {} ",leftOperator);
                     }
                 } else {
                     rigthOperand += formula.charAt(pos);
@@ -81,10 +110,12 @@ public class Parser {
                 }
             }
         }
-        ValueToken token = parseValue(rigthOperand);
-        leftOperator.setRightOperand(token.getValue());
-        if (!token.isConstant()) {
-            values.add(token.getValue());
+        if (rigthOperand.length() > 0) {
+            ValueToken token = parseValue(rigthOperand);
+            leftOperator.setRightOperand(token.getValue());
+            if (!token.isConstant()) {
+                values.add(token.getValue());
+            }
         }
         LOGGER.debug("done {} {}", leftOperator,values);
         return new ExpressionToken(new Expression(leftOperator, values),pos);

@@ -3,7 +3,7 @@ package org.glorund.calc.operator;
 public class MultiplyOperator extends AbstractOperator  implements Operator{
 
     public MultiplyOperator() {
-        super("*");
+        super("*",1);
     }
 
     @Override

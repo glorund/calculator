@@ -3,14 +3,16 @@ package org.glorund.calc.operator;
 public class AbstractOperator {
     private final String symbol;
     private final boolean unary;
+    private final int priority;
 
-    public AbstractOperator(final String symbol, boolean unary) {
+    public AbstractOperator(final String symbol, int priority, boolean unary) {
         this.symbol = symbol;
+        this.priority = priority;
         this.unary = unary;
     }
 
-    public AbstractOperator(String symbol) {
-        this(symbol,false);
+    public AbstractOperator(String symbol,int priority) {
+        this(symbol,priority,false);
     }
 
     public String getSymbol() {
@@ -27,6 +29,10 @@ public class AbstractOperator {
 
     public double evaluate(double leftOperand) {
         return 0;
+    }
+    
+    public int getPriority() {
+        return priority;
     }
 
 }
