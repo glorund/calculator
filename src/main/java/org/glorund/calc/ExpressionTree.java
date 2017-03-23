@@ -38,4 +38,9 @@ public class ExpressionTree implements ExpressionNode {
         }
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "(" + leftOperand + " " + operator.getSymbol() + " " + rightOperand + ")" ;
+    }
 }

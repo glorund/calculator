@@ -3,7 +3,7 @@ package org.glorund.calc.operator;
 public class SubtractionOperator extends AbstractOperator  implements Operator{
 
     public SubtractionOperator() {
-        super("+");
+        super("-");
     }
 
     @Override

@@ -2,6 +2,8 @@ package org.glorund.calc;
 
 import java.util.List;
 
+import org.glorund.calc.parser.ExpressionToken;
+import org.glorund.calc.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,15 +14,14 @@ public class Calc {
     
     @Autowired
     private Parser parser;
-    private final String formula = "X1+X2/(X3*6)";
+    private final String formula = "X1+X2/(X3*6.1)-5";
+//    private static final String formula = "X1+X2/X3";
 
     @RequestMapping("/calc") //(method=POST)
     public double greeting(@RequestBody List<Double> args) {
         
-        Expression expression = parser.oldParse(formula);
-        //formula parser
+        Expression expression = parser.parse(formula,false).getExpression();
 
-        //value parser
         if (args.size() == expression.getValues().size()) {
             int index = 0;
             for (double val : args) {
