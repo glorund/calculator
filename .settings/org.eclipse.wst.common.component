@@ -2,7 +2,7 @@
     <wb-module deploy-name="test-0.0.1-SNAPSHOT">
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <property name="context-root" value="test"/>
         <property name="java-output-path" value="/test/target/classes"/>
+        <property name="context-root" value="calculator"/>
     </wb-module>
 </project-modules>
