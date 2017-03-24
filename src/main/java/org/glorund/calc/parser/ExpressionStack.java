@@ -24,19 +24,20 @@ public class ExpressionStack {
         return values;
     }
 
-    public boolean push(boolean addOnly, Operator operator, String operand) {
-        if (addOnly) {
-            if (node == null) {
-                node = new ExpressionTree(operator);
-                ValueToken token = parseValue(operand);
-                if (!token.isConstant()) {
-                    values.add(token.getValue());
-                }
-                node.setLeftOperand(token.getValue());
-                return true;
+
+    public boolean pushAsInitial(Operator operator, String operand) {
+        if (node == null) {
+            node = new ExpressionTree(operator);
+            ValueToken token = parseValue(operand);
+            if (!token.isConstant()) {
+                values.add(token.getValue());
             }
-            return false;
+            node.setLeftOperand(token.getValue());
+            return true;
         }
+        return false;
+    }
+    public boolean push(Operator operator, String operand) {
         if (operand.length() > 0 ) {
             ValueToken token = parseValue(operand);
             node.setRightOperand(token.getValue());
@@ -91,4 +92,5 @@ public class ExpressionStack {
             }
         }
     }
+
 }

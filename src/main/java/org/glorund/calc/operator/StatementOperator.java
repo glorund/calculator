@@ -1,7 +1,7 @@
 package org.glorund.calc.operator;
 
 public class StatementOperator extends UnaryOperator implements Operator {
-    private final char closedChar=')';
+    private static final  char CLOSED_CHAR=')';
     
     public StatementOperator() {
         super('(',4);
@@ -10,7 +10,7 @@ public class StatementOperator extends UnaryOperator implements Operator {
     
     @Override
     public char getClosedChar() {
-        return closedChar;
+        return CLOSED_CHAR;
     }
 
     @Override

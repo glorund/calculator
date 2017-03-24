@@ -45,6 +45,7 @@ public class ExpressionTree implements ExpressionNode {
         this.rightOperand = rightOperand;
     }
 
+    @Override
     public double evaluate() {
         Double value;
         if (operator.isUnary()) {

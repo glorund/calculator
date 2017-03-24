@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.glorund.calc.Expression;
 import org.glorund.calc.ExpressionTree;
-import org.glorund.calc.ExpressionValue;
 import org.glorund.calc.operator.AdditionOperator;
 import org.glorund.calc.operator.DivineOperator;
 import org.glorund.calc.operator.MultiplyOperator;
@@ -41,11 +40,9 @@ public class Parser {
 
     private ExpressionToken parseRecursor(String formula, int priority) throws ParsingException {
         LOGGER.debug("parsing formula {}",formula);
-        List<ExpressionValue> values = new ArrayList<>();
         int pos = 0;
         String rigthOperand = "";
         String formulaTail = formula;
-        ExpressionTree leftOperator = null;
         ExpressionStack stack = new ExpressionStack();
         while (pos < formulaTail.length()) {
             String tail = formulaTail.substring(pos);
@@ -70,69 +67,33 @@ public class Parser {
                 ExpressionToken internal = parseRecursor(tail.substring(1,closedPos),0);
                 pos+=closedPos+1;
                 stack.push(operator.getOperator(),internal.getExpression().getTree(), internal.getExpression().getValues());
-                if (leftOperator == null) {
-                    leftOperator = new ExpressionTree(operator.getOperator(),internal.getExpression().getTree());
-                } else {
-                    leftOperator.setRightOperand(internal.getExpression().getTree());
-                }
-                values.addAll(internal.getExpression().getValues());
             } else {
-                if (operand.length()==0 && !valid(leftOperator) ) {
+                if (operand.length()==0 && !valid(stack.getNode()) ) {
                     throw new ParsingException(
                             "Syntax error. left operand not found for "+operator.getOperator().getSymbol()
                             +" at pos "+ pos + " expression: "+formulaTail);
                 }
                 pos+=operator.getIndex()+1;
-                stack.push(true,operator.getOperator(),operand);
-                if (leftOperator == null) {
-                    leftOperator = new ExpressionTree(operator.getOperator());
-                    ValueToken token = parseValue(operand);
-                    if (!token.isConstant()) {
-                        values.add(token.getValue());
-                    }
-                    leftOperator.setLeftOperand(token.getValue());
+                if (stack.getNode() == null) {
+                    stack.pushAsInitial(operator.getOperator(),operand);
                 } else {
-                    if (getMinPriority(leftOperator,priority)>operator.getOperator().getPriority()) {
+                    if (getMinPriority(stack.getNode(),priority)>operator.getOperator().getPriority()) {
                         rigthOperand = operand;
                         pos = oldPos + operand.length();
                         break;
                     }
-                    if (getMaxPriority(leftOperator,priority)<operator.getOperator().getPriority()) {
+                    if (getMaxPriority(stack.getNode(),priority)<operator.getOperator().getPriority()) {
                         ExpressionToken internal = parseRecursor(formulaTail.substring(oldPos),operator.getOperator().getPriority());
                         stack.push(internal.getExpression().getTree(), internal.getExpression().getValues());
-                        leftOperator.setRightOperand(internal.getExpression().getTree());
-                        values.addAll(internal.getExpression().getValues());
                         pos=oldPos+internal.getIndex();
                     } else {
                         pos = operator.getIndex() + 1;
-                        stack.push(false,operator.getOperator(),operand);
-                        if (operand.length() > 0 ) {
-                            ValueToken token = parseValue(operand);
-                            leftOperator.setRightOperand(token.getValue());
-                            if (!token.isConstant()) {
-                                values.add(token.getValue());
-                            }
-                        }
-                        ExpressionTree expr = new ExpressionTree(operator.getOperator());
-                        expr.setLeftOperand(leftOperator);
-                        leftOperator = expr;
+                        stack.push(operator.getOperator(),operand);
                     }
                 }
             }
         }
         stack.push(rigthOperand);
-        if (rigthOperand.length() > 0) {
-            ValueToken token = parseValue(rigthOperand);
-            if (leftOperator == null) {
-                leftOperator = new ExpressionTree(new StatementOperator());
-                leftOperator.setLeftOperand(token.getValue());
-            } else {
-                leftOperator.setRightOperand(token.getValue());
-            }
-            if (!token.isConstant()) {
-                values.add(token.getValue());
-            }
-        }
         LOGGER.debug("Done {}",stack.getNode());
         return new ExpressionToken(new Expression(stack.getNode(), stack.getValues()),pos);
     }
@@ -148,19 +109,6 @@ public class Parser {
 
     private boolean valid(ExpressionTree leftOperator) {
         return leftOperator != null && leftOperator.isValid();
-    }
-
-    @Deprecated
-    private ValueToken parseValue(String argument) {
-        try{
-            double doudleValue = Double.parseDouble(argument); 
-            ExpressionValue value = new ExpressionValue("Const.");
-            value.setValue(doudleValue);
-            return new ValueToken(true, value);
-        } catch (NumberFormatException e) {
-            ExpressionValue value = new ExpressionValue(argument);
-            return new ValueToken(false, value);
-        }
     }
 
     private OperatorToken getNextOperator(final String formula, final int start) {
