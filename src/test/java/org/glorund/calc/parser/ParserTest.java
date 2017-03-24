@@ -97,7 +97,7 @@ public class ParserTest {
         Parser target = new Parser();
         String formula = "(a+b)/(c-d)";
         Expression actual = target.parse(formula);
-        assertEquals("(((({a=0.0}+{b=0.0}))/(({c=0.0})-{d=0.0})))",actual.getTree().toString());
+        assertEquals("((({a=0.0}+{b=0.0}))/({c=0.0}-{d=0.0}))",actual.getTree().toString());
         assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
     }
 
@@ -106,7 +106,7 @@ public class ParserTest {
         Parser target = new Parser();
         String formula = "(a+b)/(c)-d";
         Expression actual = target.parse(formula);
-        assertEquals("(((({a=0.0}+{b=0.0}))/(({c=0.0})-{d=0.0})))",actual.getTree().toString());
+        assertEquals("(((({a=0.0}+{b=0.0}))/(({c=0.0})-{d=0.0})",actual.getTree().toString());
         assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
     }
     

@@ -6,6 +6,7 @@ import java.util.List;
 import org.glorund.calc.ExpressionTree;
 import org.glorund.calc.ExpressionValue;
 import org.glorund.calc.operator.Operator;
+import org.glorund.calc.operator.StatementOperator;
 
 public class ExpressionStack {
     private ExpressionTree node;
@@ -24,14 +25,17 @@ public class ExpressionStack {
     }
 
     public boolean push(boolean addOnly, Operator operator, String operand) {
-        if (addOnly && node == null) {
-            node = new ExpressionTree(operator);
-            ValueToken token = parseValue(operand);
-            if (!token.isConstant()) {
-                values.add(token.getValue());
+        if (addOnly) {
+            if (node == null) {
+                node = new ExpressionTree(operator);
+                ValueToken token = parseValue(operand);
+                if (!token.isConstant()) {
+                    values.add(token.getValue());
+                }
+                node.setLeftOperand(token.getValue());
+                return true;
             }
-            node.setLeftOperand(token.getValue());
-            return true;
+            return false;
         }
         if (operand.length() > 0 ) {
             ValueToken token = parseValue(operand);
@@ -76,7 +80,12 @@ public class ExpressionStack {
     public void push(String rigthOperand) {
         if (rigthOperand.length() > 0) {
             ValueToken token = parseValue(rigthOperand);
-            node.setRightOperand(token.getValue());
+            if (node == null) {
+                node = new ExpressionTree(new StatementOperator());
+                node.setLeftOperand(token.getValue());
+            } else {
+                node.setRightOperand(token.getValue());
+            }
             if (!token.isConstant()) {
                 values.add(token.getValue());
             }

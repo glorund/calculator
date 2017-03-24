@@ -46,7 +46,7 @@ public class Parser {
         String rigthOperand = "";
         String formulaTail = formula;
         ExpressionTree leftOperator = null;
-        //ExpressionStack stack = new ExpressionStack();
+        ExpressionStack stack = new ExpressionStack();
         while (pos < formulaTail.length()) {
             String tail = formulaTail.substring(pos);
             OperatorToken operator = getNextOperator(formulaTail, pos);
@@ -68,8 +68,8 @@ public class Parser {
                     throw new ParsingException("Closed symbol not found for opened expression at pos "+pos+" expression: " + formulaTail);
                 }
                 ExpressionToken internal = parseRecursor(tail.substring(1,closedPos),0);
-                pos=closedPos+1;
-                //stack.push(operator.getOperator(),internal.getExpression().getTree(), internal.getExpression().getValues());
+                pos+=closedPos+1;
+                stack.push(operator.getOperator(),internal.getExpression().getTree(), internal.getExpression().getValues());
                 if (leftOperator == null) {
                     leftOperator = new ExpressionTree(operator.getOperator(),internal.getExpression().getTree());
                 } else {
@@ -83,7 +83,7 @@ public class Parser {
                             +" at pos "+ pos + " expression: "+formulaTail);
                 }
                 pos+=operator.getIndex()+1;
-                //stack.push(true,operator.getOperator(),operand);
+                stack.push(true,operator.getOperator(),operand);
                 if (leftOperator == null) {
                     leftOperator = new ExpressionTree(operator.getOperator());
                     ValueToken token = parseValue(operand);
@@ -99,13 +99,13 @@ public class Parser {
                     }
                     if (getMaxPriority(leftOperator,priority)<operator.getOperator().getPriority()) {
                         ExpressionToken internal = parseRecursor(formulaTail.substring(oldPos),operator.getOperator().getPriority());
-//                        stack.push(internal.getExpression().getTree(), internal.getExpression().getValues());
+                        stack.push(internal.getExpression().getTree(), internal.getExpression().getValues());
                         leftOperator.setRightOperand(internal.getExpression().getTree());
                         values.addAll(internal.getExpression().getValues());
                         pos=oldPos+internal.getIndex();
                     } else {
                         pos = operator.getIndex() + 1;
-                        //stack.push(false,operator.getOperator(),operand);
+                        stack.push(false,operator.getOperator(),operand);
                         if (operand.length() > 0 ) {
                             ValueToken token = parseValue(operand);
                             leftOperator.setRightOperand(token.getValue());
@@ -120,17 +120,21 @@ public class Parser {
                 }
             }
         }
-        //stack.push(rigthOperand);
+        stack.push(rigthOperand);
         if (rigthOperand.length() > 0) {
             ValueToken token = parseValue(rigthOperand);
-            leftOperator.setRightOperand(token.getValue());
+            if (leftOperator == null) {
+                leftOperator = new ExpressionTree(new StatementOperator());
+                leftOperator.setLeftOperand(token.getValue());
+            } else {
+                leftOperator.setRightOperand(token.getValue());
+            }
             if (!token.isConstant()) {
                 values.add(token.getValue());
             }
         }
-        //LOGGER.debug("Done {}",stack.getNode());
-        LOGGER.debug("Old Done {}",leftOperator);
-        return new ExpressionToken(new Expression(leftOperator, values),pos);
+        LOGGER.debug("Done {}",stack.getNode());
+        return new ExpressionToken(new Expression(stack.getNode(), stack.getValues()),pos);
     }
 
 
