@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.glorund.calc.parser.Parser;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,12 +22,6 @@ public class CalcTest {
     
     private Calc target;
     
-    @Before
-    public void setUp() {
-        target = new Calc(parser,formula);
-        target.init();
-    }
-    
     @Test
     public void baselineTest() {
         //[12.4,-0.2,98.765e-1]
@@ -38,7 +31,19 @@ public class CalcTest {
     }
     
     @Test
-    public void smoukeTest() {
+    public void smoukeTest() throws Exception {
+        target = new Calc(parser,formula);
+        target.init();
+
+        double actual = target.calculate(Arrays.asList(12.4,-0.2,98.765e-1));
+        assertEquals(BASE_LINE,actual,DELTA);
+    }
+    
+    @Test
+    public void smoukeSecondTest() throws Exception {
+        target = new Calc(parser,"(X1+X2)/(X3*6.1)-5");
+        target.init();
+
         double actual = target.calculate(Arrays.asList(12.4,-0.2,98.765e-1));
         assertEquals(BASE_LINE,actual,DELTA);
     }

@@ -9,7 +9,7 @@ public class DivineOperatorTest {
 
     @Test
     public void evaluationTest() {
-        DivineOperator target =  new DivineOperator();
+        BinaryOperator target =  new DivineOperator();
         double actual = target.evaluate(4., 5.);
         assertEquals(.8, actual,DELTA);
     }

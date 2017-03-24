@@ -1,9 +1,9 @@
 package org.glorund.calc.operator;
 
-public class AdditionOperator extends AbstractOperator  implements Operator {
+public class AdditionOperator extends BinaryOperator {
 
     public AdditionOperator() {
-        super("+",0);
+        super('+',0);
     }
 
     @Override

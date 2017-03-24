@@ -1,9 +1,9 @@
 package org.glorund.calc.operator;
 
-public class MultiplyOperator extends AbstractOperator  implements Operator{
+public class MultiplyOperator extends BinaryOperator implements Operator{
 
     public MultiplyOperator() {
-        super("*",1);
+        super('*',1);
     }
 
     @Override

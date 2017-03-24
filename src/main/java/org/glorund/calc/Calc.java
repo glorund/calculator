@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.glorund.calc.parser.Parser;
+import org.glorund.calc.parser.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class Calc {
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws ParsingException {
         expression = parser.parse(formula);
     }
 

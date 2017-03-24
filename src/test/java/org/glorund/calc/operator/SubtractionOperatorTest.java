@@ -9,7 +9,7 @@ public class SubtractionOperatorTest {
 
     @Test
     public void evaluationTest() {
-        Operator target =  new SubtractionOperator();
+        BinaryOperator target =  new SubtractionOperator();
         double actual = target.evaluate(4., 5.);
         assertEquals(-1., actual,DELTA);
     }

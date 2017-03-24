@@ -9,7 +9,7 @@ public class AdditionOperatorTest {
 
     @Test
     public void evaluationTest() {
-        Operator target =  new AdditionOperator();
+        BinaryOperator target =  new AdditionOperator();
         double actual = target.evaluate(4., 5.);
         assertEquals(9., actual,DELTA);
     }

@@ -9,7 +9,7 @@ public class MultiplyOperatorTest {
 
     @Test
     public void evaluationTest() {
-        Operator target =  new MultiplyOperator();
+        BinaryOperator target =  new MultiplyOperator();
         double actual = target.evaluate(4., 5.);
         assertEquals(20., actual,DELTA);
     }

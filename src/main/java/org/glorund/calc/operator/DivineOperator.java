@@ -1,9 +1,9 @@
 package org.glorund.calc.operator;
 
-public class DivineOperator extends AbstractOperator  implements Operator{
+public class DivineOperator extends BinaryOperator  implements Operator{
 
     public DivineOperator() {
-        super("/",1);
+        super('/',1);
     }
 
     @Override

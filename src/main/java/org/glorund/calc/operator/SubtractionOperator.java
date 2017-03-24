@@ -1,9 +1,9 @@
 package org.glorund.calc.operator;
 
-public class SubtractionOperator extends AbstractOperator  implements Operator{
+public class SubtractionOperator extends BinaryOperator  implements Operator{
 
     public SubtractionOperator() {
-        super("-",0);
+        super('-',0);
     }
 
     @Override

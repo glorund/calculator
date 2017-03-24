@@ -6,7 +6,6 @@ package org.glorund.calc.parser;
 import static org.junit.Assert.assertEquals;
 
 import org.glorund.calc.Expression;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,7 +14,7 @@ import org.junit.Test;
  */
 public class ParserTest {
     @Test
-    public void parseTest() {
+    public void parseTest() throws Exception {
         Parser target = new Parser();
         String formula = "X1+X2/(X3*6.1)-5";
         Expression actual = target.parse(formula);
@@ -23,7 +22,7 @@ public class ParserTest {
         assertEquals("[{X1=0.0}, {X2=0.0}, {X3=0.0}]",actual.getValues().toString());
     }
     @Test
-    public void parseSecondTest() {
+    public void parseSecondTest() throws Exception {
         Parser target = new Parser();
         String formula = "X1+X2/(X3-6.1)-5";
         Expression actual = target.parse(formula);
@@ -32,7 +31,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseSimpleTest() {
+    public void parseSimpleTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+b-c";
         Expression actual = target.parse(formula);
@@ -41,15 +40,15 @@ public class ParserTest {
     }
     
     @Test
-    public void parseBracesTest() {
+    public void parseBracesTest() throws Exception {
         Parser target = new Parser();
         String formula = "(a+b)-c";
         Expression actual = target.parse(formula);
-        assertEquals("(=(({a=0.0}+{b=0.0}))-{c=0.0})",actual.getTree().toString());
+        assertEquals("((({a=0.0}+{b=0.0}))-{c=0.0})",actual.getTree().toString());
         assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}]",actual.getValues().toString());
     }
     @Test
-    public void parseBracesTailTest() {
+    public void parseBracesTailTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+(b-c)";
         Expression actual = target.parse(formula);
@@ -58,7 +57,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseSimplePriorityTest() {
+    public void parseSimplePriorityTest() throws ParsingException {
         Parser target = new Parser();
         String formula = "a*b-c";
         Expression actual = target.parse(formula);
@@ -67,7 +66,7 @@ public class ParserTest {
     }
     
     @Test
-    public void parsePriorityTest() {
+    public void parsePriorityTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+b/c";
         Expression actual = target.parse(formula);
@@ -76,7 +75,7 @@ public class ParserTest {
     }
     
     @Test
-    public void parsePriorityFourTest() {
+    public void parsePriorityFourTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+b/c-d";
         Expression actual = target.parse(formula);
@@ -84,4 +83,52 @@ public class ParserTest {
         assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
     }
 
+    @Test
+    public void parseStartingBracesTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "(a+b)/c-d";
+        Expression actual = target.parse(formula);
+        assertEquals("(((({a=0.0}+{b=0.0}))/{c=0.0})-{d=0.0})",actual.getTree().toString());
+        assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
+    }
+    
+    @Test
+    public void parseBothBracesTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "(a+b)/(c-d)";
+        Expression actual = target.parse(formula);
+        assertEquals("(((({a=0.0}+{b=0.0}))/(({c=0.0})-{d=0.0})))",actual.getTree().toString());
+        assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
+    }
+
+    @Test
+    public void parseSingleBracesTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "(a+b)/(c)-d";
+        Expression actual = target.parse(formula);
+        assertEquals("(((({a=0.0}+{b=0.0}))/(({c=0.0})-{d=0.0})))",actual.getTree().toString());
+        assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
+    }
+    
+    @Test
+    public void parseErrorUnclosedBraketTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "a+(b/(c)-d";
+        try {
+            target.parse(formula);
+        } catch (ParsingException e) {
+            assertEquals("Closed symbol not found for expression: (b/(c)-d", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseSyntaxErrorTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "a*/b/c-d";
+        try {
+            target.parse(formula);
+        } catch (ParsingException e) {
+            assertEquals("Syntax error. left operand not found for / at pos 2 expression: a*/b/c-d", e.getMessage());
+        }
+    }
 }

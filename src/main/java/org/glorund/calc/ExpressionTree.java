@@ -1,8 +1,8 @@
 package org.glorund.calc;
 
+import org.glorund.calc.operator.BinaryOperator;
 import org.glorund.calc.operator.Operator;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.glorund.calc.operator.UnaryOperator;
 
 public class ExpressionTree implements ExpressionNode {
     // The left node in the tree.
@@ -19,8 +19,22 @@ public class ExpressionTree implements ExpressionNode {
         this.operator = operator;
     }
 
+    public ExpressionTree(Operator operator, ExpressionNode leftOperand) {
+        super();
+        this.operator = operator;
+        this.leftOperand = leftOperand;
+    }
+
     public Operator getOperator() {
         return operator;
+    }
+
+    public ExpressionNode getLeftOperand() {
+        return leftOperand;
+    }
+
+    public ExpressionNode getRightOperand() {
+        return rightOperand;
     }
 
     public void setLeftOperand(ExpressionNode leftOperand) {
@@ -32,38 +46,30 @@ public class ExpressionTree implements ExpressionNode {
     }
 
     public double evaluate() {
-        Double value = null;
+        Double value;
         if (operator.isUnary()) {
-            value =  operator.evaluate(leftOperand.evaluate());
+            value =  ((UnaryOperator) operator).evaluate(leftOperand.evaluate());
         } else {
-            value = operator.evaluate(leftOperand.evaluate(), rightOperand.evaluate());
+            value = ((BinaryOperator) operator).evaluate(leftOperand.evaluate(), rightOperand.evaluate());
         }
         return value;
     }
 
     @Override
+    public boolean isValid() {
+        if (operator.isUnary()) {
+            return leftOperand.isValid();
+        }
+        return leftOperand != null && leftOperand.isValid() && rightOperand != null && rightOperand.isValid();
+    }
+
+    @Override
     public String toString() {
         if (operator.isUnary()) {
-            return operator.getSymbol()+"("+leftOperand+")";
+            return String.valueOf(operator.getSymbol())+leftOperand+((UnaryOperator)operator).getClosedChar();
         } else {
             return "(" + leftOperand + operator.getSymbol() + rightOperand + ")" ;
         }
     }
 
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof ExpressionTree)) {
-            return false;
-        }
-        ExpressionTree castOther = (ExpressionTree) other;
-        return new EqualsBuilder().append(leftOperand, castOther.leftOperand)
-                .append(rightOperand, castOther.rightOperand).append(operator, castOther.operator).isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(leftOperand).append(rightOperand).append(operator).toHashCode();
-    }
-    
-    
 }
