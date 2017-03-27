@@ -1,7 +1,5 @@
 package org.glorund.calc.parser;
 
-import static org.junit.Assert.assertFalse;
-
 import java.util.ArrayList;
 import java.util.List;
 
