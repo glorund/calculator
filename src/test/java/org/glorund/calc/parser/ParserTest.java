@@ -47,6 +47,25 @@ public class ParserTest {
         assertEquals("((({a=0.0}+{b=0.0}))-{c=0.0})",actual.getTree().toString());
         assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}]",actual.getValues().toString());
     }
+
+    @Test
+    public void parseConstantTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "(12.4+b)-c";
+        Expression actual = target.parse(formula);
+        assertEquals("((({Const.=12.4}+{b=0.0}))-{c=0.0})",actual.getTree().toString());
+        assertEquals("[{b=0.0}, {c=0.0}]",actual.getValues().toString());
+    }
+    @Test
+    public void parseIntenalConstantTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "(a+56.3)-c";
+        Expression actual = target.parse(formula);
+        assertEquals("((({a=0.0}+{Const.=56.3}))-{c=0.0})",actual.getTree().toString());
+        assertEquals("[{a=0.0}, {c=0.0}]",actual.getValues().toString());
+    }
+
+    
     @Test
     public void parseBracesTailTest() throws Exception {
         Parser target = new Parser();
