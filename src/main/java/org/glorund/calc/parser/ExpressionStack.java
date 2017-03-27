@@ -25,19 +25,24 @@ public class ExpressionStack {
     }
 
 
-    public boolean pushAsInitial(Operator operator, String operand) {
+    public int push(OperatorToken operatorToken, String operand) {
         if (node == null) {
-            node = new ExpressionTree(operator);
-            ValueToken token = parseValue(operand);
-            if (!token.isConstant()) {
-                values.add(token.getValue());
-            }
-            node.setLeftOperand(token.getValue());
-            return true;
+            return pushAsInitial(operatorToken, operand);
         }
-        return false;
+        return pushContinued(operatorToken, operand);
     }
-    public boolean push(Operator operator, String operand) {
+
+    public int pushAsInitial(OperatorToken operatorToken, String operand) {
+        node = new ExpressionTree(operatorToken.getOperator());
+        ValueToken token = parseValue(operand);
+        if (!token.isConstant()) {
+            values.add(token.getValue());
+        }
+        node.setLeftOperand(token.getValue());
+        return operatorToken.getIndex()+1;
+    }
+
+    public int pushContinued(OperatorToken operatorToken, String operand) {
         if (operand.length() > 0 ) {
             ValueToken token = parseValue(operand);
             node.setRightOperand(token.getValue());
@@ -45,10 +50,10 @@ public class ExpressionStack {
                 values.add(token.getValue());
             }
         }
-        ExpressionTree expr = new ExpressionTree(operator);
+        ExpressionTree expr = new ExpressionTree(operatorToken.getOperator());
         expr.setLeftOperand(node);
         node = expr;
-        return false;
+        return operatorToken.getIndex() + 1;
     }
 
     private ValueToken parseValue(String argument) {
@@ -63,21 +68,23 @@ public class ExpressionStack {
         }
     }
 
-    public void push(Operator operator, ExpressionTree tree, List<ExpressionValue> values) {
+    public int push(Operator operator, ExpressionToken token) {
         if (node == null) {
-            node = new ExpressionTree(operator,tree);
+            node = new ExpressionTree(operator,token.getExpression().getTree());
         } else {
-            node.setRightOperand(tree);
+            node.setRightOperand(token.getExpression().getTree());
         }
-        this.values.addAll(values);
+        this.values.addAll(token.getExpression().getValues());
+        return token.getIndex()+1;
     }
 
-    public void push(ExpressionTree tree, List<ExpressionValue> values) {
-        node.setRightOperand(tree);
-        this.values.addAll(values);
+    public int push(ExpressionToken token) {
+        node.setRightOperand(token.getExpression().getTree());
+        this.values.addAll(token.getExpression().getValues());
+        return token.getIndex();
     }
 
-    public void push(String rigthOperand) {
+    public int push(String rigthOperand) {
         if (rigthOperand.length() > 0) {
             ValueToken token = parseValue(rigthOperand);
             if (node == null) {
@@ -90,6 +97,24 @@ public class ExpressionStack {
                 values.add(token.getValue());
             }
         }
+        return rigthOperand.length();
+    }
+    
+    public boolean hasLowerPriorityThan(Operator operator, int basePriority) {
+        return getNode() != null && getMaxPriority(getNode(),basePriority)<operator.getPriority();
     }
 
+    public boolean hasHigherPriorityThan(Operator operator, int basePriority) {
+        return getMinPriority(getNode(),basePriority)>operator.getPriority();
+    }
+
+    private int getMinPriority(ExpressionTree leftOperator, int priority) {
+        return leftOperator == null ? priority : Math.min(priority, leftOperator.getOperator().getPriority());
+    }
+
+    
+    private int getMaxPriority(ExpressionTree leftOperator, int priority) {
+        return leftOperator == null ? priority : Math.max(priority, leftOperator.getOperator().getPriority());
+    }
+    
 }

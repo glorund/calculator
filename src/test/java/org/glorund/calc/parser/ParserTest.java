@@ -6,7 +6,6 @@ package org.glorund.calc.parser;
 import static org.junit.Assert.assertEquals;
 
 import org.glorund.calc.Expression;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
