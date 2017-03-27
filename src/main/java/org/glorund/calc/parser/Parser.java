@@ -1,5 +1,7 @@
 package org.glorund.calc.parser;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,12 +42,13 @@ public class Parser {
 
     private ExpressionToken parseRecursor(String formula, int priority) throws ParsingException {
         LOGGER.debug("parsing formula {}",formula);
-        int pos =0;
+        int pos = 0;
         int index = 0;
         String rigthOperand = "";
         ExpressionStack stack = new ExpressionStack();
-        for (String tail = formula ;tail.length() >0 ;tail = tail.substring(pos),index+=pos) {
-            OperatorToken operator = getNextOperator(tail);
+        OperatorToken operator = getNextOperator(formula);
+        for (; operator.getOperand() != null ;operator = getNextOperator(operator.getTail()), index+=pos) {
+            String tail = operator.getTail();
             if (operator.getOperator() == null) { // only right operand remains
                 rigthOperand = operator.getOperand();
                 break;
@@ -53,6 +56,7 @@ public class Parser {
             if (operator.getOperator().isUnary()) {
                 ExpressionToken internal = processUnaryOperator(operator, formula, tail);
                 pos = stack.push(operator.getOperator(),internal) + 1;
+                operator.pushTail(pos);
                 continue;
             }
             if (operator.getOperand().length()==0 && !valid(stack.getNode()) ) {
@@ -62,17 +66,21 @@ public class Parser {
             }
             if (stack.hasHigherPriorityThan(operator.getOperator(),priority)) {
                 rigthOperand = operator.getOperand();
+                operator = new OperatorToken(null, operator.getOperand(), operator.getTail(), operator.getIndex());
                 break;
             }
             if (stack.hasLowerPriorityThan(operator.getOperator(), priority)) { // next operand is has bigger priority
                 ExpressionToken internal = parseRecursor(tail,operator.getOperator().getPriority());
                 pos = stack.push(internal);
+                operator.pushTail(pos);
                 continue;
             }
             pos = stack.push(operator);
+            operator.pushTail(pos);
         }
         index += stack.push(rigthOperand);
-        LOGGER.debug("Done {}",stack.getNode());
+        operator.pushTail(rigthOperand.length());
+        LOGGER.debug("Done {} ",stack.getNode());
         return new ExpressionToken(new Expression(stack.getNode(), stack.getValues()),index);
     }
 
@@ -97,11 +105,11 @@ public class Parser {
         for (int charPos = 0; charPos < formula.length(); charPos++) {
             for (Operator operator : operators) {
                 if (formula.charAt(charPos) == operator.getSymbol()) {
-                    return new OperatorToken(operator,formula.substring(0,charPos) ,charPos);
+                    return new OperatorToken(operator,formula.substring(0,charPos), formula ,charPos);
                 }
             }
         }
-        return new OperatorToken(null,formula ,formula.length());
+        return new OperatorToken(null,formula ,formula,formula.length());
     }
 
     private int findMatched(final String formula,final UnaryOperator operator) throws ParsingException {
