@@ -51,8 +51,7 @@ public class ExpressionStack {
         return false;
     }
 
-    //RC TODO make it private
-    public ValueToken parseValue(String argument) {
+    private ValueToken parseValue(String argument) {
         try{
             double doudleValue = Double.parseDouble(argument); 
             ExpressionValue value = new ExpressionValue("Const.");

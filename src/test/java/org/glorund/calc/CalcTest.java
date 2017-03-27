@@ -45,6 +45,6 @@ public class CalcTest {
         target.init();
 
         double actual = target.calculate(Arrays.asList(12.4,-0.2,98.765e-1));
-        assertEquals(BASE_LINE,actual,DELTA);
+        assertEquals(-4.797499114058624,actual,DELTA);
     }
 }
