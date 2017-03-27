@@ -59,10 +59,10 @@ public class ParserTest {
     @Test
     public void parseIntenalConstantTest() throws Exception {
         Parser target = new Parser();
-        String formula = "(a+56.3)-c";
+        String formula = "(a+56.3)-45.3";
         Expression actual = target.parse(formula);
-        assertEquals("((({a=0.0}+{Const.=56.3}))-{c=0.0})",actual.getTree().toString());
-        assertEquals("[{a=0.0}, {c=0.0}]",actual.getValues().toString());
+        assertEquals("((({a=0.0}+{Const.=56.3}))-{Const.=45.3})",actual.getTree().toString());
+        assertEquals("[{a=0.0}]",actual.getValues().toString());
     }
 
     

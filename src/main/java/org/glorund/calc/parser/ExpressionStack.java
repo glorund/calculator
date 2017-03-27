@@ -25,30 +25,26 @@ public class ExpressionStack {
     }
 
 
-    public int push(OperatorToken operatorToken, String operand) {
+    public int push(OperatorToken operatorToken) {
         if (node == null) {
-            return pushAsInitial(operatorToken, operand);
+            return pushAsInitial(operatorToken);
         }
-        return pushContinued(operatorToken, operand);
+        return pushContinued(operatorToken);
     }
 
-    public int pushAsInitial(OperatorToken operatorToken, String operand) {
+    public int pushAsInitial(OperatorToken operatorToken) {
         node = new ExpressionTree(operatorToken.getOperator());
-        ValueToken token = parseValue(operand);
-        if (!token.isConstant()) {
-            values.add(token.getValue());
-        }
+        ValueToken token = parseValue(operatorToken.getOperand());
+        addToValues(token);
         node.setLeftOperand(token.getValue());
         return operatorToken.getIndex()+1;
     }
 
-    public int pushContinued(OperatorToken operatorToken, String operand) {
-        if (operand.length() > 0 ) {
-            ValueToken token = parseValue(operand);
+    public int pushContinued(OperatorToken operatorToken) {
+        if (operatorToken.getOperand().length() > 0 ) {
+            ValueToken token = parseValue(operatorToken.getOperand());
             node.setRightOperand(token.getValue());
-            if (!token.isConstant()) {
-                values.add(token.getValue());
-            }
+            addToValues(token);
         }
         ExpressionTree expr = new ExpressionTree(operatorToken.getOperator());
         expr.setLeftOperand(node);
@@ -93,11 +89,15 @@ public class ExpressionStack {
             } else {
                 node.setRightOperand(token.getValue());
             }
-            if (!token.isConstant()) {
-                values.add(token.getValue());
-            }
+            addToValues(token);
         }
         return rigthOperand.length();
+    }
+
+    private void addToValues(ValueToken token) {
+        if (!token.isConstant()) {
+            values.add(token.getValue());
+        }
     }
     
     public boolean hasLowerPriorityThan(Operator operator, int basePriority) {

@@ -46,32 +46,22 @@ public class Parser {
         ExpressionStack stack = new ExpressionStack();
         for (String tail = formula ;tail.length() >0 ;tail = tail.substring(pos),index+=pos) {
             OperatorToken operator = getNextOperator(tail);
-            if (operator == null) { // only right operand remains
-                rigthOperand = tail;
+            if (operator.getOperator() == null) { // only right operand remains
+                rigthOperand = operator.getOperand();
                 break;
             }
-            String operand = tail.substring(0, operator.getIndex());
             if (operator.getOperator().isUnary()) {
-                if (operand.length()!=0) {
-                    throw new ParsingException(
-                            "Syntax error. left operand found unary "+operator.getOperator().getSymbol()
-                            +" at pos "+ pos + " expression: "+formula);
-                }
-                int closedPos = findMatched(tail, (UnaryOperator)operator.getOperator());
-                if (closedPos < 0) {
-                    throw new ParsingException("Closed symbol not found for opened expression at pos "+index+" expression: " + formula);
-                }
-                ExpressionToken internal = parseRecursor(tail.substring(1,closedPos),0);
+                ExpressionToken internal = processUnaryOperator(operator, formula, tail);
                 pos = stack.push(operator.getOperator(),internal) + 1;
                 continue;
             }
-            if (operand.length()==0 && !valid(stack.getNode()) ) {
+            if (operator.getOperand().length()==0 && !valid(stack.getNode()) ) {
                 throw new ParsingException(
                         "Syntax error. left operand not found for "+operator.getOperator().getSymbol()
                         +" at pos "+ index + " expression: "+formula);
             }
             if (stack.hasHigherPriorityThan(operator.getOperator(),priority)) {
-                rigthOperand = operand;
+                rigthOperand = operator.getOperand();
                 break;
             }
             if (stack.hasLowerPriorityThan(operator.getOperator(), priority)) { // next operand is has bigger priority
@@ -79,11 +69,24 @@ public class Parser {
                 pos = stack.push(internal);
                 continue;
             }
-            pos = stack.push(operator,operand);
+            pos = stack.push(operator);
         }
         index += stack.push(rigthOperand);
         LOGGER.debug("Done {}",stack.getNode());
         return new ExpressionToken(new Expression(stack.getNode(), stack.getValues()),index);
+    }
+
+    private ExpressionToken processUnaryOperator(OperatorToken operator, String formula, String tail) throws ParsingException {
+        if (operator.getOperand().length()!=0) {
+            throw new ParsingException(
+                    "Syntax error. left operand found unary "+operator.getOperator().getSymbol()
+                    +" at pos "+ operator.getIndex() + " expression: "+formula);
+        }
+        int closedPos = findMatched(tail, (UnaryOperator)operator.getOperator());
+        if (closedPos < 0) {
+            throw new ParsingException("Closed symbol not found for opened expression at pos "+operator.getIndex()+" expression: " + formula);
+        }
+        return parseRecursor(tail.substring(1,closedPos),0);
     }
 
     private boolean valid(ExpressionTree leftOperator) {
@@ -94,11 +97,11 @@ public class Parser {
         for (int charPos = 0; charPos < formula.length(); charPos++) {
             for (Operator operator : operators) {
                 if (formula.charAt(charPos) == operator.getSymbol()) {
-                    return new OperatorToken(operator, charPos);
+                    return new OperatorToken(operator,formula.substring(0,charPos) ,charPos);
                 }
             }
         }
-        return null;
+        return new OperatorToken(null,formula ,formula.length());
     }
 
     private int findMatched(final String formula,final UnaryOperator operator) throws ParsingException {
