@@ -1,5 +1,6 @@
 package org.glorund.calc;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,8 +25,7 @@ public class Calc {
     private String formula;
 
     Expression expression;
-    
-    
+
     @Autowired
     public Calc(Parser parser,@Value("${formula}") String formula) {
         super();
@@ -37,7 +38,16 @@ public class Calc {
         expression = parser.parse(formula);
     }
 
-    @RequestMapping("/calc") //(method=POST)
+    @RequestMapping(value="/api/config")
+    public String getFormula() {
+        return formula;
+    }
+    @RequestMapping(value="/api/test", method = RequestMethod.POST)
+    public String calculateTest(@RequestBody List<String> params) {
+        return "Got "+ params;
+    }
+    
+    @RequestMapping(value="/api/calc", method = RequestMethod.POST, consumes = "application/json") //(method=POST)
     public double calculate(@RequestBody List<Double> args) {
         if (args.size() == expression.getValues().size()) {
             int index = 0;

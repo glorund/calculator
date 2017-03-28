@@ -5,7 +5,7 @@
 
 ============
 build 
-mvn clean build
+mvn clean package
 
 ============
 run
