@@ -44,6 +44,8 @@ public class Calc {
             for (double val : args) {
                 expression.getValues().get(index++).setValue(val);
             }
+        } else {
+            throw new IllegalArgumentException("invalid number of parameters. Expecting "+ expression.getValues().size() + " got "+ args.size());
         }
         LOGGER.debug("all set {} {}", expression.getTree(),expression.getValues());
         return expression.getTree().evaluate();

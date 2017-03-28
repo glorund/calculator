@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "formula",
-  "type": "java.lang.String",
-  "description": "A description for 'formula'"
-}]}
+{"properties": [
+  {
+    "name": "formula",
+    "type": "java.lang.String",
+    "description": "A description for 'formula'"
+  },
+  {
+    "name": "formula",
+    "type": "java.lang.String",
+    "description": "A description for 'formula'"
+  }
+]}

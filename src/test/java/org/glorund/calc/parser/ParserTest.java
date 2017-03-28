@@ -40,7 +40,7 @@ public class ParserTest {
     }
     
     @Test
-    public void parseBracesTest() throws Exception {
+    public void parseBracketsTest() throws Exception {
         Parser target = new Parser();
         String formula = "(a+b)-c";
         Expression actual = target.parse(formula);
@@ -67,7 +67,7 @@ public class ParserTest {
 
     
     @Test
-    public void parseBracesTailTest() throws Exception {
+    public void parseBracketsTailTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+(b-c)";
         Expression actual = target.parse(formula);
@@ -119,7 +119,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseStartingBracesTest() throws Exception {
+    public void parseStartingBracketsTest() throws Exception {
         Parser target = new Parser();
         String formula = "(a+b)/c-d";
         Expression actual = target.parse(formula);
@@ -128,7 +128,7 @@ public class ParserTest {
     }
     
     @Test
-    public void parseBothBracesTest() throws Exception {
+    public void parseBothBracketsTest() throws Exception {
         Parser target = new Parser();
         String formula = "(a+b)/(c-d)";
         Expression actual = target.parse(formula);
@@ -137,7 +137,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseSingleBracesTest() throws Exception {
+    public void parseSingleBracketTest() throws Exception {
         Parser target = new Parser();
         String formula = "(a+b)/(c)-d";
         Expression actual = target.parse(formula);
@@ -146,7 +146,7 @@ public class ParserTest {
     }
     
     @Test
-    public void parseErrorUnclosedBraketTest() throws Exception {
+    public void parseErrorUnclosedBracketTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+(b/(c)-d";
         try {
@@ -156,7 +156,7 @@ public class ParserTest {
         }
     }
     @Test
-    public void parseInvalidBracetErrorTest() throws Exception {
+    public void parseInvalidBracketsErrorTest() throws Exception {
         Parser target = new Parser();
         String formula = "a+3(b/(c)-d";
         try {
