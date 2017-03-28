@@ -11,42 +11,33 @@
             }).then(function(data) {
                $('#formula-value').append(data);
             });
-            var data = [12.4,0.2,9876.5e-1];
-            $.ajax({
-                   type: "POST",
-                   url: "api/calc",
-                   data: JSON.stringify(data),
-                   contentType: "application/json; charset=utf-8",
-                   dataType: "json",
-                   success: function (data) {
-                	   document.getElementById('result').innerHTML=data;
-                   },
-
-                   error: function (data) {
-                       // error handler
-                       console.log(jqXHR);
-                       alert('fail' + status.code);
-                   }
-            });
         });
         </script>
         <script>
-        $('#btn').click(function(){
-        	$.ajax({
-                url: "api/config"
-            }).then(function(data) {
-               $('#result').append(data);
+        function callSomeFunction() {
+        var params = $('#input').val().split(",")
+            $.ajax({
+                type: "POST",
+                url: "api/calc",
+                data: JSON.stringify(params),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    $('#result').text(data);
+                },
+                error: function (data) {
+                    alert('fail' + data.statusCode);
+                }
             });
-        });
+        }
         </script>
     </head>
 
     <body>
+        <div id="formula-value">Formula is </div>
         <div>
-            <p id="formula-value">The formula is </p>
+        Parameters <input id="input" type="text" placeholder="Specify Parameters"/> <button id="button" data-role="button"  onclick="callSomeFunction();">calculate</button>
         </div>
-        Paramaters <input id="inp" type="text" placeholder="Enter Paramaters" data-bind="value: arguments"  />
-        <button id="btn">calculate</button>
-        <div>Result<div id="result"></div></div>
+        <div>Result =<a id="result"></a></div>
     </body>
 </html>
