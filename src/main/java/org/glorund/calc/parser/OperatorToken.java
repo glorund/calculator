@@ -24,6 +24,9 @@ public class OperatorToken {
     public Operator getOperator() {
         return operator;
     }
+    public int getTailIndex() {
+        return tailIndex;
+    }
     public int getIndex() {
         return index;
     }

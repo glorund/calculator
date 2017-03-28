@@ -136,7 +136,17 @@ public class ParserTest {
         try {
             target.parse(formula);
         } catch (ParsingException e) {
-            assertEquals("Closed symbol not found for expression: (b/(c)-d", e.getMessage());
+            assertEquals("Syntax Error: Closed symbol not found pos 0 for expression: (b/(c)-d", e.getMessage());
+        }
+    }
+    @Test
+    public void parseInvalidBracetErrorTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "a+3(b/(c)-d";
+        try {
+            target.parse(formula);
+        } catch (ParsingException e) {
+            assertEquals("Syntax Error: left operand found unary ( pos 3 for expression: a+3(b/(c)-d", e.getMessage());
         }
     }
 
@@ -147,7 +157,7 @@ public class ParserTest {
         try {
             target.parse(formula);
         } catch (ParsingException e) {
-            assertEquals("Syntax error. left operand not found for / at pos 2 expression: a*/b/c-d", e.getMessage());
+            assertEquals("Syntax Error: left operand not found for / pos 2 for expression: a*/b/c-d", e.getMessage());
         }
     }
 }

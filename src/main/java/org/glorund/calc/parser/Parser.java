@@ -40,57 +40,45 @@ public class Parser {
 
     private ExpressionToken parseRecursor(String formula, int priority) throws ParsingException {
         LOGGER.debug("parsing formula {}",formula);
-        int pos = 0;
         int index = 0;
-        String rigthOperand = "";
         ExpressionStack stack = new ExpressionStack();
         OperatorToken operator = getNextOperator(formula);
-        for (; operator.getOperand() != null ;operator = getNextOperator(operator.getTail()), index+=pos) {
+        for (; operator.getOperator() != null ; index+=operator.getTailIndex(),operator = getNextOperator(operator.getTail())) {
             String tail = operator.getTail();
-            if (operator.getOperator() == null) { // only right operand remains
-                rigthOperand = operator.getOperand();
-                break;
-            }
             if (operator.getOperator().isUnary()) {
-                ExpressionToken internal = processUnaryOperator(operator, formula, tail);
-                pos = stack.push(operator.getOperator(),internal) + 1;
-                operator.pushTail(pos);
+                ExpressionToken internal = processUnaryOperator(operator, formula, index, tail);
+                operator.pushTail(stack.push(operator.getOperator(),internal) + 1);
                 continue;
             }
             if (operator.getOperand().length()==0 && !valid(stack.getNode()) ) {
                 throw new ParsingException(
-                        "Syntax error. left operand not found for "+operator.getOperator().getSymbol()
-                        +" at pos "+ index + " expression: "+formula);
+                        "left operand not found for "+operator.getOperator().getSymbol(), formula, index);
             }
             if (stack.hasHigherPriorityThan(operator.getOperator(),priority)) {
-                rigthOperand = operator.getOperand();
                 operator = new OperatorToken(null, operator.getOperand(), operator.getTail(), operator.getIndex());
                 break;
             }
             if (stack.hasLowerPriorityThan(operator.getOperator(), priority)) { // next operand is has bigger priority
                 ExpressionToken internal = parseRecursor(tail,operator.getOperator().getPriority());
-                pos = stack.push(internal);
-                operator.pushTail(pos);
+                operator.pushTail(stack.push(internal));
                 continue;
             }
-            pos = stack.push(operator);
-            operator.pushTail(pos);
+            operator.pushTail(stack.push(operator));
         }
-        index += stack.push(rigthOperand);
-        operator.pushTail(rigthOperand.length());
+        operator.pushTail(stack.push(operator.getOperand()));
+        index += operator.getTailIndex();
         LOGGER.debug("Done {} ",stack.getNode());
         return new ExpressionToken(new Expression(stack.getNode(), stack.getValues()),index);
     }
 
-    private ExpressionToken processUnaryOperator(OperatorToken operator, String formula, String tail) throws ParsingException {
+    private ExpressionToken processUnaryOperator(OperatorToken operator, String formula, int index, String tail) throws ParsingException {
         if (operator.getOperand().length()!=0) {
             throw new ParsingException(
-                    "Syntax error. left operand found unary "+operator.getOperator().getSymbol()
-                    +" at pos "+ operator.getIndex() + " expression: "+formula);
+                    "left operand found unary "+operator.getOperator().getSymbol(), formula,index + operator.getIndex());
         }
         int closedPos = findMatched(tail, (UnaryOperator)operator.getOperator());
         if (closedPos < 0) {
-            throw new ParsingException("Closed symbol not found for opened expression at pos "+operator.getIndex()+" expression: " + formula);
+            throw new ParsingException("Closed symbol not found",formula, index + operator.getIndex());
         }
         return parseRecursor(tail.substring(1,closedPos),0);
     }
@@ -123,6 +111,6 @@ public class Parser {
                 return charPos;
             }
         } 
-        throw new ParsingException("Closed symbol not found for expression: " + formula);
+        throw new ParsingException("Closed symbol not found",formula,0);
     }
 }
