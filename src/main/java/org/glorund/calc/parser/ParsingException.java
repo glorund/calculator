@@ -4,11 +4,7 @@ public class ParsingException extends Exception {
     private static final long serialVersionUID = 1674809746293714261L;
     private static final String SYNTAX_ERROR = "Syntax Error: ";
     private final String message;
-    
-    public ParsingException(String message) {
-        super();
-        this.message = message;
-    }
+
     public ParsingException(String message, String formula, int index) {
         super();
         this.message = 

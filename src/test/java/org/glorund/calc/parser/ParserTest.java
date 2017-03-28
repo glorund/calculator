@@ -101,6 +101,22 @@ public class ParserTest {
         assertEquals("(({a=0.0}+({b=0.0}/{c=0.0}))-{d=0.0})",actual.getTree().toString());
         assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
     }
+    @Test
+    public void parsePriorityPowerTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "a+b^c/d";
+        Expression actual = target.parse(formula);
+        assertEquals("({a=0.0}+(({b=0.0}^{c=0.0})/{d=0.0}))",actual.getTree().toString());
+        assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
+    }
+    @Test
+    public void parsePriorityPowerPlainTest() throws Exception {
+        Parser target = new Parser();
+        String formula = "a^b+c/d";
+        Expression actual = target.parse(formula);
+        assertEquals("(({a=0.0}^{b=0.0})+({c=0.0}/{d=0.0}))",actual.getTree().toString());
+        assertEquals("[{a=0.0}, {b=0.0}, {c=0.0}, {d=0.0}]",actual.getValues().toString());
+    }
 
     @Test
     public void parseStartingBracesTest() throws Exception {

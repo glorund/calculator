@@ -6,15 +6,16 @@ import java.util.Random;
 
 import org.junit.Test;
 
-public class DivineOperatorTest {
-    private static final double DELTA = 0.00000001;
+public class PowerOperatorTest {
     Random random = new Random();
+    private static final double DELTA = 0.00000001;
     @Test
-    public void evaluationTest() {
+    public void testEvaluate() throws Exception {
         double left = random.nextDouble();
         double right  = random.nextDouble();
-        BinaryOperator target =  new DivineOperator();
+        BinaryOperator target = new PowerOperator();
         double actual = target.evaluate(left, right);
-        assertEquals(left/right, actual,DELTA);
+        assertEquals(Math.pow(left, right),actual,DELTA);
     }
+
 }

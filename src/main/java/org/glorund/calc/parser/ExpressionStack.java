@@ -37,7 +37,7 @@ public class ExpressionStack {
         ValueToken token = parseValue(operatorToken.getOperand());
         addToValues(token);
         node.setLeftOperand(token.getValue());
-        return operatorToken.getIndex()+1;
+        return operatorToken.getOperatorIndex()+1;
     }
 
     public int pushContinued(OperatorToken operatorToken) {
@@ -49,7 +49,7 @@ public class ExpressionStack {
         ExpressionTree expr = new ExpressionTree(operatorToken.getOperator());
         expr.setLeftOperand(node);
         node = expr;
-        return operatorToken.getIndex() + 1;
+        return operatorToken.getOperatorIndex() + 1;
     }
 
     private ValueToken parseValue(String argument) {

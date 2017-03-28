@@ -3,6 +3,7 @@ package org.glorund.calc;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import org.glorund.calc.parser.Parser;
 import org.junit.Test;
@@ -12,39 +13,49 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalcTest {
-    private static final double BASE_LINE = 7.3966803133452235;
     private static final double DELTA =  0.00000001;
+    Random random = new Random();
 
     @InjectMocks
     private Parser parser;
-    @InjectMocks
-    private String formula = "X1+X2/(X3*6.1)-5";
-    
-    private Calc target;
-    
-    @Test
-    public void baselineTest() {
-        //[12.4,-0.2,98.765e-1]
-        //X1+X2/(X3*6.1)-5
-        double base  = 12.4+(-0.2/(98.765e-1*6.1))-5;
-        assertEquals(BASE_LINE,base,DELTA);
-    }
-    
+
     @Test
     public void smoukeTest() throws Exception {
-        target = new Calc(parser,formula);
+        double X1 = random.nextDouble();
+        double X2 = random.nextDouble();
+        double X3 = random.nextDouble();
+
+        double base  = X1+X2/(X3*6.1)-5;
+        Calc target = new Calc(parser,"X1+X2/(X3*6.1)-5");
         target.init();
 
-        double actual = target.calculate(Arrays.asList(12.4,-0.2,98.765e-1));
-        assertEquals(BASE_LINE,actual,DELTA);
+        double actual = target.calculate(Arrays.asList(X1,X2,X3));
+        assertEquals(base,actual,DELTA);
     }
     
     @Test
     public void smoukeSecondTest() throws Exception {
-        target = new Calc(parser,"(X1+X2)/(X3*6.1)-5");
+        double X1 = random.nextDouble();
+        double X2 = random.nextDouble();
+        double X3 = random.nextDouble();
+        double base = (X1+X2)/(X3*6.1)-5;
+        Calc target = new Calc(parser,"(X1+X2)/(X3*6.1)-5");
         target.init();
 
-        double actual = target.calculate(Arrays.asList(12.4,-0.2,98.765e-1));
-        assertEquals(-4.797499114058624,actual,DELTA);
+        double actual = target.calculate(Arrays.asList(X1,X2,X3));
+        assertEquals(base,actual,DELTA);
+    }
+    
+    @Test
+    public void smoukePowerTest() throws Exception {
+        double X1 = random.nextDouble();
+        double X2 = random.nextDouble()*2-1;
+        double X3 = random.nextDouble();
+        double base = Math.pow(X1,X2)/(X3*6.1)-5;
+        Calc target = new Calc(parser,"X1^X2/(X3*6.1)-5");
+        target.init();
+
+        double actual = target.calculate(Arrays.asList(X1,X2,X3));
+        assertEquals(base,actual,DELTA);
     }
 }
