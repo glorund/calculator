@@ -9,8 +9,32 @@
         </layout>
     </appender>
 
-    <logger name="org.springframework">
+    <logger name="org">
+        <level value="INFO"/>
+    </logger>
+    <logger name="org.springframework.web">
         <level value="DEBUG"/>
+    </logger>
+    <logger name="org.springframework.web.servlet.handler.AbstractHandlerMethodMapping">
+        <level value="INFO"/>
+    </logger>
+    <logger name="org.springframework.beans.factory.support.AbstractBeanFactory">
+        <level value="ERROR"/>
+    </logger>
+    <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory">
+        <level value="DEBUG"/>
+    </logger>
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <level value="WARN"/>
+    </logger>
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
+        <level value="WARN"/>
+    </logger>
+    <logger name="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <level value="WARN"/>
+    </logger>
+    <logger name="org.springframework.web.servlet.resource">
+        <level value="TRACE"/>
     </logger>
     <logger name="org.glorund.calc">
         <level value="DEBUG"/>

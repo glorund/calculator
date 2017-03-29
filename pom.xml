@@ -10,7 +10,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring.version>4.1.6.RELEASE</spring.version>
-        <jackson.version>1.7.25</jackson.version>
+        <slf4j.version>1.7.12</slf4j.version>
+        <jackson.version>2.5.3</jackson.version>
   </properties>
 
     <modules>
@@ -28,7 +29,12 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>${jackson.version}</version>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
     
             <dependency>
@@ -36,6 +42,11 @@
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+            <version>{jackson.version}</version>
+        </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
