@@ -19,10 +19,6 @@
             <type>war</type>
         </dependency>
      </dependencies>
-   
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
 
     <build>
         <finalName>WebCalculator</finalName>

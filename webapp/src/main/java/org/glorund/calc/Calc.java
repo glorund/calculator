@@ -1,6 +1,5 @@
 package org.glorund.calc;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -41,16 +40,16 @@ public class Calc {
         expression = parser.parse(formula);
     }
 
-    @RequestMapping(value="/api/config")
+    @RequestMapping(value="/config")
     public String getFormula() {
         return formula;
     }
-    @RequestMapping(value="/api/test", method = RequestMethod.POST)
+    @RequestMapping(value="/test", method = RequestMethod.POST)
     public String calculateTest(@RequestBody List<String> params) {
         return "Got "+ params;
     }
     
-    @RequestMapping(value="/api/calc", method = RequestMethod.POST, consumes = "application/json") //(method=POST)
+    @RequestMapping(value="/calc", method = RequestMethod.POST, consumes = "application/json") //(method=POST)
     public double calculate(@RequestBody List<Double> args) {
         if (args.size() == expression.getValues().size()) {
             int index = 0;
