@@ -14,7 +14,7 @@ public class WebApplication implements WebApplicationInitializer {
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
         appContext.register(AppConfig.class);
 
-        ServletRegistration.Dynamic dispatcher = container.addServlet("REST API dispatcher", new DispatcherServlet(appContext));
+        ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(appContext));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/api/*");
     }
