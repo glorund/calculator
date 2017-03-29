@@ -6,13 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.glorund.calc.Expression;
-import org.glorund.calc.ExpressionNode;
-import org.glorund.calc.ExpressionValue;
-import org.glorund.calc.processor.Expression;
-import org.glorund.calc.processor.ExpressionNode;
-import org.glorund.calc.processor.ExpressionTree;
-import org.glorund.calc.processor.ExpressionValue;
 import org.glorund.calc.processor.operator.AdditionOperator;
 import org.glorund.calc.processor.operator.Operator;
 import org.glorund.calc.processor.operator.SubtractionOperator;
